@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Shoper.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shoper.Domain.Entities
+namespace Shoper.Application.Dtos.OrderItemDtos
 {
-    public class OrderItem
+    public class UpdateOrderItemDto
     {
         public int OrderItemId { get; set; }
         public int OrderId { get; set; }

@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Shoper.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shoper.Domain.Entities
+namespace Shoper.Application.Dtos.ProductDtos
 {
-    public class Product
+    public class GetByIdProductDto
     {
         public int ProductId { get; set; }
         public string ProductName { get; set; }
@@ -15,7 +16,6 @@ namespace Shoper.Domain.Entities
         public int ProductStock { get; set; }
         public string ImageUrl { get; set; }
         public int CategoryId { get; set; }
-        //public Category Category { get; set; } //her ürünün bir tane kategorisi olabilir anlamında kullandık.
-
+        //public Category Category { get; set; }
     }
 }

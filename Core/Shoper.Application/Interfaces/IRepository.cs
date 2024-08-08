@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,6 +15,7 @@ namespace Shoper.Application.Interfaces
         Task CreateAsync(T entity);     //entity türüne göre oluşturma
         Task UpdateAsync(T entity);     //güncelleme icin
         Task DeleteAsync(T entity);       //silme icin
+        Task<T> GetByFilterAsync(Expression<Func<T, bool>> filter);  //filtreleme
         
     }
 }

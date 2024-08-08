@@ -29,9 +29,11 @@ namespace Shoper.Application.Usecases.CustomerServices
             });
         }
 
-        public Task DeleteCustomerAsync(int id)
+        public async Task DeleteCustomerAsync(int id)
         {
-            throw new NotImplementedException();
+            var values = await _repository.GetByIdAsync(id);
+            await _repository.DeleteAsync(values);
+
         }
 
         public async Task<List<ResultCustomerDto>> GetAllCustomerAsync()
@@ -60,9 +62,14 @@ namespace Shoper.Application.Usecases.CustomerServices
             };
         }
 
-        public Task UpdateCustomerAsync(UpdateCustomerDto updateCustomerDto)
+        public async Task UpdateCustomerAsync(UpdateCustomerDto updateCustomerDto)
         {
-            throw new NotImplementedException();
+            var values = await _repository.GetByIdAsync(updateCustomerDto.CustomerId);
+            values.CustomerFirstName = updateCustomerDto.CustomerFirstName;
+            values.CustomerLastName = updateCustomerDto.CustomerLastName;
+            values.CustomerEmail = updateCustomerDto.CustomerEmail;
+            // values.Orders = updateCustomerDto.Orders;
+            await _repository.UpdateAsync(values);
         }
     }
 }

@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Shoper.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shoper.Domain.Entities
+namespace Shoper.Application.Dtos.OrderDtos
 {
-    public class Order
+    public class GetByIdOrderDto
     {
         public int OrderId { get; set; }
         public DateTime OrderDate { get; set; }
@@ -18,6 +19,5 @@ namespace Shoper.Domain.Entities
         public int CustomerId { get; set; }
         //public Customer Customer { get; set; }  //bir siparişin bir sahibi olabilir
         public ICollection<OrderItem> OrderItems { get; set; }
-
     }
 }
