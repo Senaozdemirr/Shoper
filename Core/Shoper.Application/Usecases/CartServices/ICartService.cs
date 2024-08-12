@@ -14,5 +14,6 @@ namespace Shoper.Application.Usecases.CartServices
         Task CreateCartAsync(CreateCartDto model);  //model gonderilecek
         Task UpdateCartAsync(UpdateCartDto model);
         Task DeleteCartAsync(int id);
+        Task UpdateTotalAmount(int cartId, decimal totalAmount);
     }
 }

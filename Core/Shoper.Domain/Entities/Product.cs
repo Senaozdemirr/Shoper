@@ -15,6 +15,7 @@ namespace Shoper.Domain.Entities
         public int ProductStock { get; set; }
         public string ImageUrl { get; set; }
         public int CategoryId { get; set; }
+
         //public Category Category { get; set; } //her ürünün bir tane kategorisi olabilir anlamında kullandık.
 
     }

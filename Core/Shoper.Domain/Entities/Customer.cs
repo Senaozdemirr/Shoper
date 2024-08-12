@@ -12,7 +12,7 @@ namespace Shoper.Domain.Entities
         public string CustomerFirstName { get; set; }
         public string CustomerLastName { get; set; }
         public string CustomerEmail { get; set; }
-        public ICollection<Order> Orders { get; set; } //musterinin birden fazla siparisi olabilir
+        public ICollection<Order> Orders { get; set; }              //musterinin birden fazla siparisi olabilir
 
 
     }

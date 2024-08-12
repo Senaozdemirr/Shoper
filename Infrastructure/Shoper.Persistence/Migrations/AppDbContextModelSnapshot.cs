@@ -33,7 +33,7 @@ namespace Shoper.Persistence.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("CustomerId")
+                    b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("TotalAmount")
@@ -131,10 +131,6 @@ namespace Shoper.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ShippingAdress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -221,11 +217,13 @@ namespace Shoper.Persistence.Migrations
 
             modelBuilder.Entity("Shoper.Domain.Entities.Order", b =>
                 {
-                    b.HasOne("Shoper.Domain.Entities.Customer", null)
+                    b.HasOne("Shoper.Domain.Entities.Customer", "Customer")
                         .WithMany("Orders")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("Shoper.Domain.Entities.OrderItem", b =>

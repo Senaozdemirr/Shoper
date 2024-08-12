@@ -46,6 +46,11 @@ namespace Shoper.Persistence.Repositories
             return await _context.Set<T>().FindAsync(id);
         }
 
+        public async Task<List<T>> GetTakeAsync(int sayi)
+        {
+            return await _context.Set<T>().Take(sayi).ToListAsync();
+        }
+
         public async Task UpdateAsync(T entity)
         {
             _context.Set<T>().Update(entity);

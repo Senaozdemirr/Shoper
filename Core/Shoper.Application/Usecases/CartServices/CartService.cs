@@ -1,6 +1,7 @@
 ﻿using Shoper.Application.Dtos.CartDtos;
 using Shoper.Application.Dtos.CartItemDtos;
 using Shoper.Application.Interfaces;
+using Shoper.Application.Interfaces.ICartsRepository;
 using Shoper.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -16,13 +17,15 @@ namespace Shoper.Application.Usecases.CartServices
         private readonly IRepository<CartItem> _itemRepository;
         private readonly IRepository<Customer> _customerRepository;
         private readonly IRepository<Product> _productRepository;
+        private readonly ICartsRepository _cartsRepository;
 
-        public CartService(IRepository<Cart> repository, IRepository<CartItem> itemRepository, IRepository<Customer> customerRepository, IRepository<Product> productRepository)
+        public CartService(IRepository<Cart> repository, IRepository<CartItem> itemRepository, IRepository<Customer> customerRepository, IRepository<Product> productRepository, ICartsRepository cartsRepository)
         {
             _repository = repository;
             _itemRepository = itemRepository;
             _customerRepository = customerRepository;
             _productRepository = productRepository;
+            _cartsRepository = cartsRepository;
         }
 
         public async Task CreateCartAsync(CreateCartDto model)  //sepet olusturma
@@ -58,10 +61,10 @@ namespace Shoper.Application.Usecases.CartServices
             var cartItems = await _itemRepository.GetAllAsync();
             foreach (var item in cartItems)
             {
-                if(item.CartId == id)
+                if (item.CartId == id)
                 {
-                    var cartItem = await _itemRepository.GetByIdAsync(item.CartItemId);
-                    await _itemRepository.DeleteAsync(item);
+                    var cartitem = await _itemRepository.GetByIdAsync(item.CartItemId);
+                    await _itemRepository.DeleteAsync(cartitem);
                 }
             }
             await _repository.DeleteAsync(cart);
@@ -93,7 +96,7 @@ namespace Shoper.Application.Usecases.CartServices
                         CartId = item1.CartId,
                         CartItemId = item1.CartItemId,
                         ProductId = item1.ProductId,
-                        Products = productdto,
+                        Product = productdto,
                         Quantity = item1.Quantity,
                         TotalPrice = item1.TotalPrice,
                     };
@@ -118,20 +121,24 @@ namespace Shoper.Application.Usecases.CartServices
                 CreatedDate = cart.CreatedDate,
                 CustomerId=cart.CustomerId, 
                 Customer = customer,
+                TotalAmount=cart.TotalAmount,
             };
-            foreach (var item1 in cart.CartItems)
+            if(cart.CartItems != null)
             {
-                var productdto = await _productRepository.GetByFilterAsync(prd => prd.ProductId == item1.ProductId);
-                var cartItemdto = new ResultCartItemDto
+                foreach (var item1 in cart.CartItems)
                 {
-                    CartId = item1.CartId,
-                    CartItemId = item1.CartItemId,
-                    ProductId = item1.ProductId,
-                    Products = productdto,
-                    Quantity = item1.Quantity,
-                    TotalPrice = item1.TotalPrice,
-                };
-                result.CartItems.Add(cartItemdto);
+                    var productdto = await _productRepository.GetByFilterAsync(prd => prd.ProductId == item1.ProductId);
+                    var cartItemdto = new ResultCartItemDto
+                    {
+                        CartId = item1.CartId,
+                        CartItemId = item1.CartItemId,
+                        ProductId = item1.ProductId,
+                        Product = productdto,
+                        Quantity = item1.Quantity,
+                        TotalPrice = item1.TotalPrice,
+                    };
+                    result.CartItems.Add(cartItemdto);
+                }
             }
             return result;
         }
@@ -139,27 +146,33 @@ namespace Shoper.Application.Usecases.CartServices
         public async Task UpdateCartAsync(UpdateCartDto model)
         {
             var cart = await _repository.GetByIdAsync(model.CartId);
-            cart.CartItems = await _itemRepository.GetAllAsync();
+            var cartItems = await _itemRepository.GetAllAsync();
+            //cart.CreatedDate = model.CreatedDate;
             //cart.CustomerId = model.CustomerId;
             //cart.TotalAmount = model.TotalAmount;
-            //cart.CreatedDate = model.CreatedDate;
             var sum = 0;
             foreach (var item1 in model.CartItems)
-            { 
+            {
                 foreach (var item in cart.CartItems)
                 {
+
                     var cartItem = await _itemRepository.GetByIdAsync(item.CartItemId);
+
                     if (item.CartItemId == item1.CartItemId)
                     {
-                        cartItem.Quantity= item1.Quantity;
-                        cartItem.TotalPrice= item1.TotalPrice;
-                    }  
+                        cartItem.Quantity = item1.Quantity;
+                        cartItem.TotalPrice = item1.TotalPrice;
+                    }
                     sum = sum + item.TotalPrice;
-                    
                 }
             }
             cart.TotalAmount = sum;
             await _repository.UpdateAsync(cart);
+        }
+
+        public async Task UpdateTotalAmount(int cartId, decimal totalAmount)
+        {
+            await _cartsRepository.UpdateTotalAmountAsync(cartId, totalAmount);
         }
     }
 }

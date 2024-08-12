@@ -15,23 +15,27 @@ namespace Shoper.Application.Usecases.OrderServices
     {
         private readonly IRepository<Order> _repository;
         private readonly IRepository<OrderItem> _repositoryOrderItem;
-
-        public OrderServices(IRepository<Order> repository)
+        private readonly IRepository<Customer> _repositoryCustomer;
+        private readonly IRepository<Product> _repositoryProduct;
+        public OrderServices(IRepository<Order> repository, IRepository<OrderItem> repositoryOrderItem, IRepository<Customer> repositoryCustomer, IRepository<Product> repositoryProduct)
         {
             _repository = repository;
-            _repositoryOrderItem = _repositoryOrderItem;
+            _repositoryOrderItem = repositoryOrderItem;
+            _repositoryCustomer = repositoryCustomer;
+            _repositoryProduct = repositoryProduct;
         }
 
         public async Task CreateOrderAsync(CreateOrderDto model)
         {
+            decimal sum = 0;
             var order = new Order
             {
                 OrderDate = model.OrderDate,
-                TotalAmount = model.TotalAmount,
+                TotalAmount = sum,
                 OrderStatus = model.OrderStatus,
                 //BillingAdress = model.BillingAdress,
                 ShippingAdress = model.ShippingAdress,
-                PaymentMethod = model.PaymentMethod,
+                //PaymentMethod = model.PaymentMethod,
                 CustomerId = model.CustomerId,
             };
             await _repository.CreateAsync(order);
@@ -45,12 +49,20 @@ namespace Shoper.Application.Usecases.OrderServices
                     Quantity = item.Quantity,
                     TotalPrice = item.TotalPrice,
                 });
+                sum = sum + item.TotalPrice;
             }
+            order.TotalAmount = sum;
+            await _repository.UpdateAsync(order);
         }
 
         public async Task DeleteOrderAsync(int id)
         {
             var values = await _repository.GetByIdAsync(id);
+            foreach (var item in values.OrderItems)
+            {
+                var orderItem = await _repositoryOrderItem.GetByIdAsync(item.OrderItemId);
+                await _repositoryOrderItem.DeleteAsync(orderItem);
+            }
             await _repository.DeleteAsync(values);
         }
 
@@ -58,30 +70,46 @@ namespace Shoper.Application.Usecases.OrderServices
         {
             var values=await _repository.GetAllAsync(); 
             var orderitem=await _repositoryOrderItem.GetAllAsync();
-            return values.Select(x => new ResultOrderDto
+            var result = new List<ResultOrderDto>();
+            foreach (var item in values)
             {
-                OrderId = x.OrderId,
-                OrderDate = x.OrderDate,
-                TotalAmount = x.TotalAmount,
-                OrderStatus = x.OrderStatus,
-                //BillingAdress = x.BillingAdress,
-                ShippingAdress = x.ShippingAdress,
-                PaymentMethod = x.PaymentMethod,
-                CustomerId = x.CustomerId,
-                OrderItems = x.OrderItems.Select(oi => new ResultOrderItemDto
+                var ordercustomer = await _repositoryCustomer.GetByIdAsync(item.CustomerId);
+                var orderdto = new ResultOrderDto
                 {
-                    OrderId = oi.OrderId,
-                    ProductId = oi.ProductId,
-                    Quantity = oi.Quantity,
-                    TotalPrice = oi.TotalPrice,
-                    OrderItemId = oi.OrderItemId,
-                }).ToList()
-            }).ToList();
+                    OrderId = item.OrderId,
+                    OrderDate = item.OrderDate,
+                    TotalAmount = item.TotalAmount,
+                    OrderStatus = item.OrderStatus,
+                    //BillingAdress = item.BillingAdress,
+                    ShippingAdress = item.ShippingAdress,
+                    //PaymentMethod = item.PaymentMethod,
+                    CustomerId = item.CustomerId,
+                    Customer = ordercustomer,
+                    OrderItems=new List<ResultOrderItemDto>()
+                };
+                foreach (var item1 in item.OrderItems)
+                {
+                    var orderitemproduct=await _repositoryProduct.GetByIdAsync(item1.ProductId);
+                    var orderitemdto = new ResultOrderItemDto
+                    {
+                        OrderId = item1.OrderId,
+                        ProductId = item1.ProductId,
+                        Quantity = item1.Quantity,
+                        TotalPrice = item1.TotalPrice,
+                        OrderItemId = item1.OrderItemId,
+                        Product=orderitemproduct
+                    };
+                    orderdto.OrderItems.Add(orderitemdto);
+                }
+                result.Add(orderdto);
+            }
+            return result;
         }
 
         public async Task<GetByIdOrderDto> GetByIdOrderAsync(int id)
         {
             var values = await _repository.GetByIdAsync(id);
+            var ordercustomer=await _repositoryCustomer.GetByIdAsync(values.CustomerId);
             var result = new GetByIdOrderDto
             {
                 OrderId = values.OrderId,
@@ -90,22 +118,50 @@ namespace Shoper.Application.Usecases.OrderServices
                 OrderStatus = values.OrderStatus,
                 //BillingAdress = values.BillingAdress,
                 ShippingAdress = values.ShippingAdress,
-                PaymentMethod = values.PaymentMethod,
+                //PaymentMethod = values.PaymentMethod,
                 CustomerId = values.CustomerId,
+                Customer = ordercustomer,
+                OrderItems=new List<ResultOrderItemDto>()
             };
+            foreach (var item in result.OrderItems)
+            {
+                var orderitemproduct=await _repositoryProduct.GetByIdAsync(item.ProductId);
+                var orderitemdto = new ResultOrderItemDto
+                {
+                    OrderId = item.OrderId,
+                    Product = orderitemproduct,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    TotalPrice = item.TotalPrice,
+                    OrderItemId = item.OrderId,
+                };
+                result.OrderItems.Add(orderitemdto);
+            }
             return result;
         }
 
         public async Task UpdateOrderAsync(UpdateOrderDto model)
         {
             var values = await _repository.GetByIdAsync(model.OrderId);
-            values.OrderDate = model.OrderDate;
-            values.TotalAmount = model.TotalAmount;
+            var orderitems = await _repositoryOrderItem.GetAllAsync();
             values.OrderStatus = model.OrderStatus;
-            values.ShippingAdress = model.ShippingAdress;
-            //values.BillingAdress = model.BillingAdress;
-            values.PaymentMethod = model.PaymentMethod;
-            values.CustomerId = model.CustomerId;
+            decimal sum = 0;
+            foreach (var item in model.OrderItems) 
+            {
+                foreach (var item1 in values.OrderItems)
+                {
+                    var orderItemdto = await _repositoryOrderItem.GetByIdAsync(item1.OrderItemId);
+                    if(item.OrderItemId == item1.OrderItemId)
+                    {
+                        orderItemdto.Quantity = item.Quantity;
+                        orderItemdto.TotalPrice = item.TotalPrice;
+                    }
+                    sum = sum+ item1.TotalPrice;
+                }
+            }
+
+
+            values.TotalAmount = sum;
             await _repository.UpdateAsync(values);
         }
     }

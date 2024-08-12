@@ -14,5 +14,9 @@ namespace Shoper.Application.Usecases.ProductSevices
         Task CreateProductAsync(CreateProductDto model);  //model gonderilecek
         Task UpdateProductAsync(UpdateProductDto model);
         Task DeleteProductAsync(int id);
+        Task<List<ResultProductDto>> GetProductTake(int sayi);
+        Task<List<ResultProductDto>> GetProductByCategory(int categoryId);
+        Task<List<ResultProductDto>> GetProductByPrice(decimal minprice, decimal maxprice);
+        Task<List<ResultProductDto>> GetProductBySearch(string search);
     }
 }

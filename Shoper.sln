@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shoper.Domain", "Core\Shope
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shoper.Persistence", "Infrastructure\Shoper.Persistence\Shoper.Persistence.csproj", "{5CB7EB8C-7669-41F4-A585-88281ECA692C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shoper.WebApi", "Presentation\Shoper.WebApi\Shoper.WebApi.csproj", "{7F4DF27D-089C-49FF-A606-9A4CAFDB77CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shoper.WebApi", "Presentation\Shoper.WebApi\Shoper.WebApi.csproj", "{7F4DF27D-089C-49FF-A606-9A4CAFDB77CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shoper.WebApp", "Presentation\Shoper.WebApp\Shoper.WebApp.csproj", "{FA005BF0-2A9C-4D4F-B131-99A18D04B221}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{7F4DF27D-089C-49FF-A606-9A4CAFDB77CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F4DF27D-089C-49FF-A606-9A4CAFDB77CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F4DF27D-089C-49FF-A606-9A4CAFDB77CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA005BF0-2A9C-4D4F-B131-99A18D04B221}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA005BF0-2A9C-4D4F-B131-99A18D04B221}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA005BF0-2A9C-4D4F-B131-99A18D04B221}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA005BF0-2A9C-4D4F-B131-99A18D04B221}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,6 +56,7 @@ Global
 		{AB196812-E70A-43AA-8184-1DF432090CF1} = {3331C398-B7CD-4126-B4F1-70CBB9EB14A0}
 		{5CB7EB8C-7669-41F4-A585-88281ECA692C} = {E99B34C3-62DF-4170-8971-2C3AED978BCE}
 		{7F4DF27D-089C-49FF-A606-9A4CAFDB77CF} = {9CC55997-7293-4E20-A779-DEBC1B53D751}
+		{FA005BF0-2A9C-4D4F-B131-99A18D04B221} = {9CC55997-7293-4E20-A779-DEBC1B53D751}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A1FBC6EF-E3C5-4035-975F-A875D0D01501}
